@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Voting System - Official Candidate Ballot</title>
+  <meta name="description" content="Cast your official vote for the candidate of your choice. Clean, verified, single-submission voting portal.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow lights -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand" id="nav-brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span>Online Voting System</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-user-badge" id="nav-session-badge" style="display: none;"></span>
+      <a href="results.html" class="nav-link" id="nav-link-results">
+        <span>📊</span> Live Results
+      </a>
+      <a href="admin.html" class="nav-link" id="nav-link-admin">
+        <span>🛡️</span> Admin Portal
+      </a>
+      <button class="nav-link btn-secondary" onclick="handleLogout()" id="nav-btn-logout" style="cursor: pointer; border: none; background: transparent;">
+        <span>🚪</span> Log Out
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <header class="header-hero">
+      <span class="badge badge-primary">Official 2026 Ballot</span>
+      <h1>Select Your <span class="gradient-text">Candidate</span></h1>
+      <p>Please review each candidate's platform carefully. Click a card to choose your candidate, then confirm your ballot below.</p>
+    </header>
+
+    <!-- Voter Status Header -->
+    <section id="voter-status-container" class="voter-status-bar"></section>
+
+    <!-- Candidates Grid -->
+    <section class="candidate-grid" id="candidate-grid">
+      <!-- Dynamically populated by script.js -->
+    </section>
+  </main>
+
+  <!-- Sticky Bottom Voting Action Bar -->
+  <aside class="voting-action-bar" id="voting-bar">
+    <div class="voting-action-content">
+      <div class="selected-preview">
+        <span class="selected-preview-text">Selected Choice:</span>
+        <span class="selected-preview-name" id="selected-candidate-name">No Candidate Selected</span>
+      </div>
+      <div>
+        <button class="btn btn-secondary btn-lg" id="btn-cast-vote" disabled>
+          <span>🗳️</span> Review & Cast Ballot
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-container">
+      <div class="modal-icon">🗳️</div>
+      <h3 id="modal-title">Confirm Ballot Submission</h3>
+      <p style="margin-top: 0.75rem;">Are you sure you want to submit your final vote for:</p>
+      
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin: 1.25rem 0;">
+        <h3 id="modal-candidate-name" class="gradient-text" style="font-size: 1.3rem;">Candidate Name</h3>
+        <p id="modal-candidate-party" style="font-size: 0.85rem; margin-top: 0.25rem; color: var(--text-muted);">Candidate Party</p>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--accent-rose);">
+        ⚠️ Once submitted, your vote is recorded, your Student ID status is updated to "Voted", and access to the ballot is permanently locked.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeVoteModal()" id="btn-cancel-modal">
+          Change Selection
+        </button>
+        <button type="button" class="btn btn-primary" onclick="confirmVoteSubmission()" id="btn-confirm-modal">
+          Confirm Vote ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setupVotingPage();
+    });
+  </script>
+</body>
+</html>

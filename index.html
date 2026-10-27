@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Voting System - Secure Voter Authentication & Portal</title>
+  <meta name="description" content="Secure, modern e-voting system. Authenticate with your unique Student ID and Face Biometric verification to cast your ballot.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow lights -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand" id="nav-brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span>Online Voting System</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active" id="nav-link-login">
+        <span>🔑</span> Voter Login
+      </a>
+      <a href="results.html" class="nav-link" id="nav-link-results">
+        <span>📊</span> Live Results
+      </a>
+      <a href="admin.html" class="nav-link" id="nav-link-admin">
+        <span>🛡️</span> Admin Portal
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container-narrow">
+    <header class="header-hero">
+      <span class="badge badge-primary">Official Campus Election</span>
+      <h1>Secure <span class="gradient-text">E-Voting Portal</span></h1>
+      <h2 class="hero-election-title">COLLEGE ELECTION</h2>
+      <p class="hero-election-motto">Your Vote • Your Voice • Your Future</p>
+      <p>Enter your registered Student ID and verify your facial biometrics to unlock your official digital ballot. Each eligible student is permitted one immutable vote.</p>
+    </header>
+
+    <!-- Login Authentication Card -->
+    <div class="card" id="login-card">
+      <form id="login-form">
+        <!-- Student ID / Enrollment Number Input -->
+        <div class="form-group">
+          <label for="student-id" class="form-label">Student ID / Enrollment Number *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🆔</span>
+            <input 
+              type="text" 
+              id="student-id" 
+              class="form-input" 
+              placeholder="e.g. STU-2026-001" 
+              required 
+              autocomplete="off"
+              oninput="handleStudentIdInput(this.value)"
+            >
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem;">
+            <span class="input-hint">Must exist in Allowed Students database.</span>
+            <span id="id-status-badge" class="id-status-indicator" style="display: none;"></span>
+          </div>
+        </div>
+
+        <!-- Full Legal Name Input -->
+        <div class="form-group">
+          <label for="voter-name" class="form-label">Full Legal Name *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input 
+              type="text" 
+              id="voter-name" 
+              class="form-input" 
+              placeholder="e.g. Sophia Miller" 
+              required 
+              autocomplete="name"
+            >
+          </div>
+          <div class="input-hint">Enter your official name registered in the electoral roll.</div>
+        </div>
+
+        <!-- Biometric Face Scan Verification Section -->
+        <div class="form-group">
+          <label class="form-label" id="face-verification-label">Biometric Verification & Anti-Spoofing</label>
+          
+          <div class="biometric-card" id="biometric-card">
+            <div class="biometric-card-header">
+              <div class="bio-icon-box" id="bio-icon-box">
+                <span class="bio-icon" id="bio-status-icon">📷</span>
+              </div>
+              <div class="bio-info">
+                <div class="bio-title-row">
+                  <h4 id="bio-status-title">Face Scan & Liveness Check</h4>
+                  <span class="bio-badge bio-badge-unverified" id="bio-status-badge">Required</span>
+                </div>
+                <p id="bio-status-description">Live facial authentication & liveness challenge required to access ballot.</p>
+              </div>
+            </div>
+
+            <!-- Verified Summary Card (Hidden initially) -->
+            <div class="bio-verified-details" id="bio-verified-details" style="display: none;">
+              <div class="bio-verified-banner">
+                <span class="bio-check-icon">✓</span>
+                <div>
+                  <strong>Biometric Face & Liveness Verified</strong>
+                  <div class="bio-token-text">
+                    Biometric Token: <code id="bio-token-display">BIO-FACE-XXXX</code> • Match Confidence: <span id="bio-confidence-display">99.4%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Biometric Consent Checkbox -->
+            <div class="biometric-consent-box">
+              <label class="consent-checkbox-label">
+                <input type="checkbox" id="biometric-consent" class="custom-checkbox" checked>
+                <span>
+                  <strong>Explicit Biometric Consent:</strong> I authorize real-time biometric face verification and active liveness challenge analysis. Facial landmarks are processed cryptographically in memory and compared against the registered SHA-256 student template.
+                </span>
+              </label>
+            </div>
+
+            <!-- Face Scan Trigger Action Buttons -->
+            <div class="bio-actions">
+              <button type="button" class="btn btn-primary btn-block" id="btn-scan-face" onclick="openScannerModal()">
+                <span>📷</span> Scan Face & Complete Liveness Check
+              </button>
+              <button type="button" class="btn btn-secondary btn-block btn-sm" id="btn-rescan-face" onclick="openScannerModal()" style="display: none; margin-top: 0.5rem;">
+                <span>🔄</span> Re-scan Face
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error & Retry Banner -->
+        <div class="error-message" id="login-error" role="alert" aria-live="polite"></div>
+
+        <!-- Submit to Voting Booth (Disabled until Face is Verified) -->
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-submit" style="margin-top: 1.25rem;" disabled>
+          Enter Voting Booth &rarr;
+        </button>
+      </form>
+
+      <!-- Quick Demo Selectors -->
+      <div class="quick-test-section">
+        <p>Quick Demo Profiles (1-Click Test):</p>
+        <div class="quick-pills">
+          <button type="button" class="pill-btn" onclick="fillDemoVoter('STU-2026-001', 'Sophia Miller', 'eligible')">
+            ✨ STU-001: Sophia Miller (Active / Eligible)
+          </button>
+          <button type="button" class="pill-btn" onclick="fillDemoVoter('STU-2026-002', 'Alexander Wright', 'voted')">
+            🔒 STU-002: Alexander Wright (Voted / Blocked)
+          </button>
+          <button type="button" class="pill-btn" onclick="fillDemoVoter('STU-2026-003', 'Rahul Sharma', 'blocked')">
+            🚫 STU-003: Rahul Sharma (Admin Blocked)
+          </button>
+          <button type="button" class="pill-btn" onclick="fillDemoVoter('STU-2026-004', 'Zoya Patel', 'eligible')">
+            ✨ STU-004: Zoya Patel (Active / Eligible)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Step Process Guide -->
+    <section class="process-steps">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h4>Student ID & Liveness</h4>
+        <p>Pre-validated against the Allowed Students roll with anti-spoof liveness challenge.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h4>Face Template Match</h4>
+        <p>Biometric descriptor is cryptographically matched against the registered student template.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h4>One Immutable Vote</h4>
+        <p>Upon casting, student account status updates to Voted and duplicate entry is locked.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Face Scanner Live Camera Modal with Liveness Challenge -->
+  <div class="modal-overlay" id="scanner-modal" role="dialog" aria-modal="true" aria-labelledby="scanner-modal-title">
+    <div class="modal-container scanner-modal-container">
+      <div class="scanner-modal-header">
+        <div class="scanner-title-box">
+          <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">📷</div>
+          <div>
+            <h3 id="scanner-modal-title" style="font-size: 1.2rem;">Biometric Face & Liveness Verification</h3>
+            <span class="scanner-subtitle">Align face in frame and complete the interactive challenge</span>
+          </div>
+        </div>
+        <button type="button" class="scanner-close-btn" onclick="closeScannerModal()" aria-label="Close Face Scanner">✕</button>
+      </div>
+
+      <!-- Live Video Viewport Container -->
+      <div class="video-viewport-wrapper">
+        <!-- Live Video Element -->
+        <video id="face-video" autoplay playsinline muted></video>
+        
+        <!-- Canvas for frame analysis and snapshots -->
+        <canvas id="analysis-canvas" style="display: none;"></canvas>
+
+        <!-- Simulated Preview Face Avatar when in Simulation / Virtual Camera Mode -->
+        <div id="simulated-camera-view" class="simulated-camera-view" style="display: none;">
+          <div class="sim-face-avatar" id="sim-face-avatar">👤</div>
+          <div class="sim-watermark" id="sim-watermark-text">Biometric Camera Active</div>
+        </div>
+
+        <!-- Biometric Face Alignment Overlay Frame -->
+        <div class="face-alignment-frame" id="alignment-frame">
+          <!-- Corner Target Brackets -->
+          <div class="corner-bracket corner-tl"></div>
+          <div class="corner-bracket corner-tr"></div>
+          <div class="corner-bracket corner-bl"></div>
+          <div class="corner-bracket corner-br"></div>
+
+          <!-- Face Oval Guide -->
+          <div class="face-oval-guide" id="face-oval">
+            <div class="face-oval-marker marker-top"></div>
+            <div class="face-oval-marker marker-bottom"></div>
+            <div class="face-oval-marker marker-left"></div>
+            <div class="face-oval-marker marker-right"></div>
+          </div>
+
+          <!-- Animated Laser Scanning Line -->
+          <div class="scan-laser-line" id="scan-laser-line"></div>
+        </div>
+
+        <!-- Video HUD Indicators -->
+        <div class="video-hud">
+          <div class="hud-item hud-lighting" id="hud-lighting">
+            <span class="hud-icon">💡</span>
+            <span class="hud-text" id="lighting-text">Lighting: Good</span>
+            <div class="lighting-bar">
+              <div class="lighting-level" id="lighting-level-bar" style="width: 75%;"></div>
+            </div>
+          </div>
+          <div class="hud-item hud-faces" id="hud-faces">
+            <span class="hud-icon">👤</span>
+            <span class="hud-text" id="face-count-text">Face: Centered</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Anti-Spoofing Liveness Challenge Box -->
+      <div class="liveness-challenge-box" id="liveness-box">
+        <div class="liveness-challenge-title">
+          <span>🛡️ Anti-Spoof Liveness Challenge</span>
+        </div>
+        <div class="liveness-challenge-instruction" id="liveness-challenge-instruction">
+          Look directly into the camera and blink your eyes twice
+        </div>
+        <div class="liveness-counter" id="liveness-counter-badge">
+          Step 1 of 2: Position Face
+        </div>
+      </div>
+
+      <!-- Live Real-Time Instruction & Error Alert Box -->
+      <div class="scanner-feedback" id="scanner-feedback" role="status" aria-live="polite">
+        <span class="feedback-icon" id="feedback-icon">👁️</span>
+        <span class="feedback-text" id="feedback-text">Please hold still and center your face inside the oval frame.</span>
+      </div>
+
+      <!-- Verification Progress Bar (Shown during active scan) -->
+      <div class="bio-progress-container" id="bio-progress-container" style="display: none;">
+        <div class="bio-progress-header">
+          <span id="bio-progress-stage-text">Analyzing Biometric Landmarks...</span>
+          <span id="bio-progress-percentage">0%</span>
+        </div>
+        <div class="bio-progress-track">
+          <div class="bio-progress-fill" id="bio-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Edge-Case & Error Resolution Banner -->
+      <div class="scanner-error-banner" id="scanner-error-banner" style="display: none;">
+        <div class="error-banner-header">
+          <span class="error-banner-icon" id="error-banner-icon">⚠️</span>
+          <strong id="error-banner-title">Verification Failed</strong>
+        </div>
+        <p id="error-banner-desc">Please check your lighting and ensure your face is fully visible.</p>
+        <div class="error-banner-actions">
+          <button type="button" class="btn btn-primary btn-sm" id="btn-retry-scan" onclick="retryFaceScan()">
+            <span>🔄</span> Retry Scan
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Action Buttons -->
+      <div class="scanner-actions" id="scanner-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeScannerModal()" id="btn-cancel-scan">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary btn-lg" id="btn-capture-face" onclick="startBiometricVerification()">
+          <span>⚡</span> Verify Liveness & Match Face
+        </button>
+      </div>
+
+      <!-- Interactive Edge-Case Testing Toolbar -->
+      <div class="scanner-sim-section">
+        <div class="sim-header">
+          <span>🧪 Test Verification Scenarios (Security & Edge Cases):</span>
+        </div>
+        <div class="sim-buttons">
+          <button type="button" class="sim-btn" onclick="testScenario('success')" title="Test normal face match for active student">
+            ✅ Valid Face Match
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('face_mismatch')" title="Test face not matching registered student ID">
+            ❌ Biometric Mismatch
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('liveness_failed')" title="Test failed anti-spoof liveness challenge">
+            👁️ Spoof / Liveness Fail
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('blocked_account')" title="Test blocked student ID access denial">
+            🚫 Blocked ID
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('already_voted')" title="Test duplicate vote denial">
+            🔒 Already Voted
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('unregistered_id')" title="Test unregistered student ID denial">
+            ⚠️ Unregistered ID
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('poor_lighting')" title="Test poor lighting detection">
+            🌙 Poor Lighting
+          </button>
+          <button type="button" class="sim-btn" onclick="testScenario('no_face')" title="Test no face detected">
+            👤 No Face
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setupLoginForm();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Voting System - Admin Portal & Security Command</title>
+  <meta name="description" content="Manage allowed students, face biometric embeddings, voter statuses, and review security audit logs.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow lights -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand" id="nav-brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span>Online Voting System</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link" id="nav-link-login">
+        <span>🔑</span> Voter Login
+      </a>
+      <a href="results.html" class="nav-link" id="nav-link-results">
+        <span>📊</span> Live Results
+      </a>
+      <a href="admin.html" class="nav-link active" id="nav-link-admin">
+        <span>🛡️</span> Admin Portal
+      </a>
+      <button class="btn btn-secondary btn-sm" onclick="resetAllData()" id="btn-reset-data" style="margin-left: 0.5rem;" title="Reset demo database">
+        <span>🔄</span> Reset DB
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <header class="header-hero">
+      <span class="badge badge-primary">
+        <span>🛡️</span> Administration & Biometric Security Command
+      </span>
+      <h1>Allowed Students <span class="gradient-text">& Access Registry</span></h1>
+      <p>Configure authorized student voter registry, enroll facial biometric embeddings, enforce account lifecycle statuses, and monitor real-time security audit trails.</p>
+    </header>
+
+    <!-- Admin Metrics Cards -->
+    <section class="admin-metrics-grid">
+      <div class="admin-metric-card">
+        <div class="metric-icon-box" style="background: rgba(99, 102, 241, 0.12); color: var(--accent-primary);">
+          👥
+        </div>
+        <div class="metric-details">
+          <div class="metric-number" id="metric-total-students">0</div>
+          <div class="metric-label">Allowed Students</div>
+        </div>
+      </div>
+      <div class="admin-metric-card">
+        <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">
+          ✅
+        </div>
+        <div class="metric-details">
+          <div class="metric-number" id="metric-active-students">0</div>
+          <div class="metric-label">Active (Eligible)</div>
+        </div>
+      </div>
+      <div class="admin-metric-card">
+        <div class="metric-icon-box" style="background: rgba(124, 58, 237, 0.12); color: var(--accent-purple);">
+          🗳️
+        </div>
+        <div class="metric-details">
+          <div class="metric-number" id="metric-voted-students">0</div>
+          <div class="metric-label">Voted</div>
+        </div>
+      </div>
+      <div class="admin-metric-card">
+        <div class="metric-icon-box" style="background: rgba(225, 29, 72, 0.12); color: var(--accent-rose);">
+          🚫
+        </div>
+        <div class="metric-details">
+          <div class="metric-number" id="metric-blocked-students">0</div>
+          <div class="metric-label">Blocked</div>
+        </div>
+      </div>
+      <div class="admin-metric-card">
+        <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.12); color: var(--accent-amber);">
+          📜
+        </div>
+        <div class="metric-details">
+          <div class="metric-number" id="metric-total-logs">0</div>
+          <div class="metric-label">Audit Logs</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Allowed Students Management -->
+    <section>
+      <div class="admin-section-header">
+        <div>
+          <h2>Allowed <span class="gradient-text">Students Registry</span></h2>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Only students registered here with an <strong>Active</strong> status and matching face biometric embedding can authenticate to vote.
+          </p>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="openAddStudentModal()" id="btn-open-add-student">
+          <span>➕</span> Add Allowed Student
+        </button>
+      </div>
+
+      <!-- Toolbar: Search & Filter -->
+      <div class="admin-toolbar">
+        <div class="input-wrapper toolbar-search">
+          <span class="input-icon">🔍</span>
+          <input 
+            type="text" 
+            id="student-search-input" 
+            class="form-input" 
+            placeholder="Search by Student ID, Name, Email, or Department..."
+            oninput="handleStudentSearchAndFilter()"
+          >
+        </div>
+
+        <select id="filter-dept-select" class="filter-select" onchange="handleStudentSearchAndFilter()">
+          <option value="">All Departments</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Electronics & Comm">Electronics & Comm</option>
+          <option value="Mechanical Eng">Mechanical Eng</option>
+          <option value="Civil Eng">Civil Eng</option>
+          <option value="Management / MBA">Management / MBA</option>
+        </select>
+
+        <select id="filter-status-select" class="filter-select" onchange="handleStudentSearchAndFilter()">
+          <option value="">All Statuses</option>
+          <option value="Active">Active Only</option>
+          <option value="Blocked">Blocked Only</option>
+          <option value="Voted">Voted Only</option>
+        </select>
+      </div>
+
+      <!-- Students Table -->
+      <div class="admin-table-container">
+        <table class="admin-table" id="students-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Student Name & Dept</th>
+              <th>Email</th>
+              <th>Face Biometric Reference</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="students-table-body">
+            <!-- Dynamically populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Security Audit & Login Attempts Log -->
+    <section style="margin-top: 3rem;">
+      <div class="admin-section-header">
+        <div>
+          <h2>Security <span class="gradient-text">Audit & Login Logs</span></h2>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Real-time immutable log of every voter login attempt, face biometric match, liveness challenge result, and failure reason.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="exportAuditLogs('csv')" id="btn-export-csv">
+            <span>📥</span> Export CSV
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="exportAuditLogs('json')" id="btn-export-json">
+            <span>💾</span> Export JSON
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm btn-icon-danger" onclick="clearAllAuditLogs()" id="btn-clear-logs">
+            <span>🗑️</span> Clear Logs
+          </button>
+        </div>
+      </div>
+
+      <!-- Log Filters -->
+      <div class="admin-toolbar">
+        <div class="input-wrapper toolbar-search">
+          <span class="input-icon">🔍</span>
+          <input 
+            type="text" 
+            id="log-search-input" 
+            class="form-input" 
+            placeholder="Search logs by Student ID, Failure Reason, or Event..."
+            oninput="handleLogSearchAndFilter()"
+          >
+        </div>
+
+        <select id="log-filter-result" class="filter-select" onchange="handleLogSearchAndFilter()">
+          <option value="">All Outcomes</option>
+          <option value="SUCCESS">Success Only</option>
+          <option value="DENIED">Denied / Failed Only</option>
+        </select>
+
+        <select id="log-filter-event" class="filter-select" onchange="handleLogSearchAndFilter()">
+          <option value="">All Events</option>
+          <option value="LOGIN_ATTEMPT">Login Attempt</option>
+          <option value="LOGIN_SUCCESS">Login Success</option>
+          <option value="LOGIN_DENIED">Login Denied</option>
+          <option value="LIVENESS_FAILED">Liveness Spoof</option>
+          <option value="VOTE_CAST">Vote Cast</option>
+        </select>
+      </div>
+
+      <!-- Logs Table -->
+      <div class="admin-table-container">
+        <table class="admin-table" id="audit-logs-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Student ID & Name</th>
+              <th>Event</th>
+              <th>Outcome</th>
+              <th>Reason / Details</th>
+              <th>Confidence</th>
+              <th>Device / IP</th>
+            </tr>
+          </thead>
+          <tbody id="audit-logs-body">
+            <!-- Dynamically populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / Edit Student Modal -->
+  <div class="modal-overlay" id="student-modal" role="dialog" aria-modal="true" aria-labelledby="student-modal-title">
+    <div class="modal-container" style="max-width: 580px; text-align: left;">
+      <div class="scanner-modal-header" style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+        <div class="scanner-title-box">
+          <div class="brand-icon" style="width: 34px; height: 34px; font-size: 1.1rem;">👤</div>
+          <div>
+            <h3 id="student-modal-title" style="font-size: 1.2rem;">Add Allowed Student</h3>
+            <span class="scanner-subtitle">Enter student details and enroll biometric face template</span>
+          </div>
+        </div>
+        <button type="button" class="scanner-close-btn" onclick="closeStudentModal()" aria-label="Close Modal">✕</button>
+      </div>
+
+      <form id="student-form" onsubmit="handleSaveStudent(event)">
+        <input type="hidden" id="student-form-mode" value="add">
+        <input type="hidden" id="student-form-original-id" value="">
+
+        <div class="modal-form-grid">
+          <!-- Student ID / Enrollment Number -->
+          <div class="form-group">
+            <label for="input-student-id" class="form-label">Student ID / Enrollment No. *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🆔</span>
+              <input 
+                type="text" 
+                id="input-student-id" 
+                class="form-input" 
+                placeholder="e.g. STU-2026-008" 
+                required
+              >
+            </div>
+            <div class="input-hint">Unique institutional ID (e.g. STU-2026-001)</div>
+          </div>
+
+          <!-- Account Status -->
+          <div class="form-group">
+            <label for="input-student-status" class="form-label">Account Status *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🚦</span>
+              <select id="input-student-status" class="form-input" style="padding-left: 2.5rem;" required>
+                <option value="Active">Active (Eligible to Vote)</option>
+                <option value="Blocked">Blocked (Access Restricted)</option>
+                <option value="Voted">Voted (Ballot Already Cast)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Legal Name -->
+        <div class="form-group">
+          <label for="input-student-name" class="form-label">Full Legal Name *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input 
+              type="text" 
+              id="input-student-name" 
+              class="form-input" 
+              placeholder="e.g. Riya Sharma" 
+              required
+            >
+          </div>
+        </div>
+
+        <div class="modal-form-grid">
+          <!-- Department -->
+          <div class="form-group">
+            <label for="input-student-dept" class="form-label">Department *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🏛️</span>
+              <select id="input-student-dept" class="form-input" style="padding-left: 2.5rem;" required>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Electronics & Comm">Electronics & Comm</option>
+                <option value="Mechanical Eng">Mechanical Eng</option>
+                <option value="Civil Eng">Civil Eng</option>
+                <option value="Management / MBA">Management / MBA</option>
+                <option value="Applied Sciences">Applied Sciences</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="input-student-email" class="form-label">Email Address *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉️</span>
+              <input 
+                type="email" 
+                id="input-student-email" 
+                class="form-input" 
+                placeholder="riya.sharma@college.edu" 
+                required
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Biometric Face Reference Enrollment Box -->
+        <div class="form-group" style="margin-top: 0.5rem;">
+          <label class="form-label">Face Biometric Reference (SHA-256 Embedding Vector) *</label>
+          <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                Biometric Embedding Status:
+              </span>
+              <span id="enroll-bio-status-badge" class="bio-hash-badge enrolled">
+                ✓ Enrolled (Ready)
+              </span>
+            </div>
+
+            <div style="font-size: 0.78rem; font-family: monospace; color: var(--text-muted); background: #ffffff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; word-break: break-all;" id="enroll-bio-hash-display">
+              SHA256: 4f8b2e1a9c3d7e5f6a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f
+            </div>
+
+            <input type="hidden" id="input-student-embedding-hash" value="">
+            <input type="hidden" id="input-student-embedding-vector" value="">
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="generateNewBiometricVectorForForm()" id="btn-generate-bio-vector" style="flex: 1;">
+                <span>⚡</span> Generate New Biometric Vector
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-subtle); margin-top: 0.4rem;">
+              🔒 Raw photos are never stored. The system hashes 128-dimensional facial landmark descriptors into a cryptographic SHA-256 biometric reference signature.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeStudentModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="btn-save-student">
+            <span>💾</span> Save Student Details
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setupAdminPage();
+    });
+  </script>
+</body>
+</html>

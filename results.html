@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Voting System - Live Election Results & Analytics</title>
+  <meta name="description" content="Real-time election totals, candidate leaderboards, and voting turnout analytics.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow lights -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand" id="nav-brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span>Online Voting System</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link" id="nav-link-login">
+        <span>🔑</span> Voter Login
+      </a>
+      <a href="results.html" class="nav-link active" id="nav-link-results">
+        <span>📊</span> Live Results
+      </a>
+      <a href="admin.html" class="nav-link" id="nav-link-admin">
+        <span>🛡️</span> Admin Portal
+      </a>
+      <button class="btn btn-secondary btn-sm" onclick="resetAllData()" id="btn-reset-data" style="margin-left: 0.5rem;" title="Reset demo database">
+        <span>🔄</span> Reset DB
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <header class="header-hero">
+      <span class="badge badge-live">
+        <span class="pulse-dot"></span> Real-Time Election Analytics
+      </span>
+      <h1>Live <span class="gradient-text">Election Totals</span></h1>
+      <p>Transparent, auditable vote tallies calculated continuously across all verified digital voting booths.</p>
+    </header>
+
+    <!-- Header Stats Grid -->
+    <section class="results-header-stats">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary);">🗳️</div>
+        <div class="stat-info">
+          <div class="stat-value" id="total-votes-count">0</div>
+          <div class="stat-label">Total Ballots Cast</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">📈</div>
+        <div class="stat-info">
+          <div class="stat-value" id="turnout-count">0%</div>
+          <div class="stat-label">Turnout Tracked</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">👑</div>
+        <div class="stat-info">
+          <div class="stat-value" id="leading-candidate-name" style="font-size: 1.25rem;">Calculating...</div>
+          <div class="stat-label">Current Frontrunner</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Winner Spotlight Card -->
+    <section id="winner-spotlight" class="winner-banner"></section>
+
+    <!-- Ranked Leaderboard Breakdown -->
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Candidate <span class="gradient-text">Standings</span></h2>
+        <button class="btn btn-secondary btn-sm" id="btn-refresh-results">
+          <span>🔄</span> Refresh Count
+        </button>
+      </div>
+
+      <div class="results-list" id="results-list-container">
+        <!-- Dynamically rendered candidate bars -->
+      </div>
+    </section>
+
+    <!-- Bottom Actions Card -->
+    <section class="card" style="text-align: center; margin-top: 2rem;">
+      <h3>Ready to authenticate another voter?</h3>
+      <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        Authenticate with secure Face Scan Verification & Liveness Challenge to participate in the digital election.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="index.html" class="btn btn-primary" id="btn-return-login">
+          <span>📷</span> Authenticate Another Voter
+        </a>
+        <a href="admin.html" class="btn btn-secondary" id="btn-return-admin">
+          <span>🛡️</span> Manage Allowed Students
+        </a>
+        <button type="button" class="btn btn-secondary" onclick="window.print()" id="btn-print-report">
+          <span>🖨️</span> Print / Export Results
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setupResultsPage();
+    });
+  </script>
+</body>
+</html>
